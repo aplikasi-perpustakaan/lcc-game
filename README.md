@@ -51,8 +51,6 @@ lcc-game/
 │   ├── confetti.js       # Enjin animasi konfeti keraian berasaskan HTML5 Canvas
 │   └── game.js           # Logik permainan, drag-and-drop, tap-to-swap, dan semakan susunan
 │
-├── flash/                # Arkib fail asal .swf (disimpan untuk rujukan arkib)
-├── scripts/              # Skrip pengesahan dan semakan data
 └── README.md             # Dokumentasi projek
 ```
 
