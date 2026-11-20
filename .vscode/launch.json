@@ -2,21 +2,23 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Run & Debug in Chrome",
+      "name": "Play PTAR Shelfcraft 3D V2",
       "type": "chrome",
       "request": "launch",
-      "file": "${workspaceFolder}/index.html",
-      "sourceMaps": true
+      "url": "http://localhost:8080/v2/index.html",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "Start Local HTTP Server"
     },
     {
-      "name": "Run & Debug in Edge",
+      "name": "Play PTAR Shelfcraft 3D V2 (Microsoft Edge)",
       "type": "msedge",
       "request": "launch",
-      "file": "${workspaceFolder}/index.html",
-      "sourceMaps": true
+      "url": "http://localhost:8080/v2/index.html",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "Start Local HTTP Server"
     },
     {
-      "name": "Run & Debug with Local Server (localhost:8080)",
+      "name": "Play Classic 2D (v1)",
       "type": "chrome",
       "request": "launch",
       "url": "http://localhost:8080/index.html",

@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PTAR Shelfcraft V2 | 3D LCC Library Simulator</title>
+
+  <!-- Favicon & App Icons -->
+  <link rel="icon" type="image/svg+xml" href="../favicon.svg">
+  <link rel="apple-touch-icon" sizes="180x180" href="../apple-touch-icon.png">
+
+  <link rel="stylesheet" href="css/v2-style.css">
+</head>
+<body>
+
+  <!-- Bekas Tiga Dimensi WebGL (Three.js) -->
+  <div id="canvas-container"></div>
+
+  <!-- Lapisan Vignet & Pencahayaan Ambien -->
+  <div class="vignette-overlay"></div>
+
+  <!-- Lapisan Antara Muka Pengguna (Glassmorphic HUD) -->
+  <div class="hud-layer">
+    
+    <!-- Bar Bahagian Atas -->
+    <header class="top-bar">
+      <!-- Jenama & Logo -->
+      <div class="brand-badge hud-interactive">
+        <img src="../logo.svg?v=2" alt="Logo PTAR">
+        <div class="brand-text">
+          <h1>PTAR SHELFCRAFT <span style="color:var(--gold);font-size:11px;background:rgba(245,158,11,0.2);padding:2px 6px;border-radius:4px;margin-left:4px;">3D V2</span></h1>
+          <p>Perpustakaan Tun Abdul Razak &bull; UiTM</p>
+        </div>
+      </div>
+
+      <!-- Pemilih Tahap & Penunjuk Kemajuan -->
+      <div class="progress-panel hud-interactive">
+        <span style="font-size:12px;font-weight:700;color:var(--text-muted);margin-right:4px;">Tahap:</span>
+        <div id="stage-pills-container" class="stage-pills"></div>
+      </div>
+
+      <!-- Tindakan Pantas (Bunyi, Suasana Hujan, Versi Klasik V1) -->
+      <div class="top-actions hud-interactive">
+        <!-- Butang Suasana Hujan / Ambien -->
+        <button id="btn-ambient-drawer" class="hud-btn" title="Laci Suasana Ambien Perpustakaan">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="16" y1="13" x2="16" y2="21"></line>
+            <line x1="8" y1="13" x2="8" y2="21"></line>
+            <line x1="12" y1="15" x2="12" y2="23"></line>
+            <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25"></path>
+          </svg>
+          <span>Ambience</span>
+        </button>
+
+        <!-- Butang Bunyi Master -->
+        <button id="btn-sound-toggle" class="hud-btn active" title="Kesan Bunyi">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+          <span>Sound: ON</span>
+        </button>
+
+        <!-- Pautan Kembali ke Versi 2D Klasik -->
+        <a href="../index.html" class="hud-btn" style="text-decoration:none;" title="Tukar ke Versi 2D Klasik">
+          <span>Klasik 2D</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Laci Pengadun Audio Ambien (Rain / Focus Slider) -->
+    <div id="audio-drawer" class="audio-drawer hud-interactive">
+      <div class="audio-drawer-title">
+        <span>SUASANA PERPUSTAKAAN</span>
+      </div>
+
+      <div class="audio-track-row">
+        <div class="audio-track-label">
+          <span>🌧️ Hujan di Luar Tingkap</span>
+          <input type="checkbox" id="chk-rain" style="accent-color:var(--gold);">
+        </div>
+        <input type="range" id="sld-rain" class="audio-slider" min="0" max="1" step="0.05" value="0.35">
+      </div>
+    </div>
+
+    <!-- Panduan Tengah & Maklum Balas -->
+    <div class="center-guidance">
+      <span id="level-tag" class="level-title-tag">TAHAP 1 DARI 10</span>
+      <h2 id="level-title" class="instruction-text">Berdasarkan klasifikasi LCC, susun kesemua buku di rak.</h2>
+      <p style="font-size:13px;color:var(--text-muted);">
+        Heret buku ke slot rak sasaran, atau dwiklik buku untuk mod pemeriksaan 3D.
+      </p>
+
+      <!-- Kotak Petua / Hint -->
+      <div id="level-hint-box" class="hint-pill hud-interactive"></div>
+
+      <!-- Banner Maklum Balas Semakan -->
+      <div>
+        <div id="feedback-banner" class="feedback-banner"></div>
+      </div>
+    </div>
+
+    <!-- Bar Kawalan Bahagian Bawah -->
+    <footer class="bottom-bar">
+      <div class="controls-left hud-interactive">
+        <!-- Butang Reset -->
+        <button id="btn-reset" class="btn-game btn-reset" title="Susun semula buku tahap ini">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+            <path d="M3 3v5h5"/>
+          </svg>
+          RESET
+        </button>
+
+        <!-- Butang Petua -->
+        <button id="btn-hint" class="btn-game btn-hint" title="Buka petua susunan">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 18h6"/>
+            <path d="M10 22h4"/>
+            <path d="M12 2a7 7 0 0 0-7 7c0 2.5 1.5 4.5 3 6h8c1.5-1.5 3-3.5 3-6a7 7 0 0 0-7-7z"/>
+          </svg>
+          HINT
+        </button>
+
+        <!-- Butang Pemeriksaan 3D (Inspect) -->
+        <button id="btn-inspect-mode" class="btn-game btn-inspect" title="Periksa buku dalam mod 3D 360-darjah">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+          INSPECT
+        </button>
+      </div>
+
+      <div class="controls-right hud-interactive">
+        <!-- Butang Semak Susunan -->
+        <button id="btn-check" class="btn-game btn-check" title="Sahkan susunan buku">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="20 6 9 17 4 12"/>
+          </svg>
+          CHECK ORDER
+        </button>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- Modal Pemeriksaan Buku 3D (360 Inspection & MARC Card) -->
+  <div id="inspect-modal" class="inspect-modal">
+    <div class="inspect-card">
+      <div class="inspect-header">
+        <h3>📖 PEMERIKSAAN BUKU 3D</h3>
+        <button id="btn-close-inspect" class="inspect-close-btn">&times;</button>
+      </div>
+
+      <div class="inspect-body">
+        <h4 id="card-title" style="font-size:16px;color:#ffffff;">Buku Koleksi PTAR</h4>
+        <p style="font-size:12px;color:var(--text-muted);">Sistem Pengkelasan Library of Congress (LCC)</p>
+
+        <!-- Kad Anatomi Nombor Panggilan -->
+        <div class="call-dissect-box">
+          <div style="font-size:11px;font-weight:700;color:var(--gold);margin-bottom:10px;">
+            ANATOMI NOMBOR PANGGILAN (CALL NUMBER DISSECTION):
+          </div>
+
+          <div class="dissect-row">
+            <span class="dissect-label">Nombor Penuh:</span>
+            <span id="card-call-num" class="dissect-value" style="color:#fef08a;">-</span>
+          </div>
+          <div class="dissect-row">
+            <span class="dissect-label">1. Huruf Kelas Utama:</span>
+            <span id="card-class-letter" class="dissect-value">-</span>
+          </div>
+          <div class="dissect-row">
+            <span class="dissect-label">2. Nombor Subkelas:</span>
+            <span id="card-class-num" class="dissect-value">-</span>
+          </div>
+          <div class="dissect-row">
+            <span class="dissect-label">3. Nombor Cutter Pengarang:</span>
+            <span id="card-cutter" class="dissect-value">-</span>
+          </div>
+          <div class="dissect-row">
+            <span class="dissect-label">4. Tahun / Jilid / Salinan:</span>
+            <span id="card-suffix" class="dissect-value">-</span>
+          </div>
+        </div>
+
+        <p class="inspect-instruction">
+          💡 Klik &amp; heret tetikus di luar kad untuk memutar dan memeriksa buku dalam 3D 360-darjah.
+        </p>
+      </div>
+
+      <button onclick="window.v2Game.closeInspectionModal()" class="btn-game btn-check" style="width:100%;justify-content:center;margin-top:16px;">
+        KEMBALI KE RAK BUKU
+      </button>
+    </div>
+
+    <div class="rotate-hint">
+      <span>🔄 Klik &amp; Heret untuk memutar buku 360°</span>
+    </div>
+  </div>
+
+  <!-- Modal Tahniah Tamat Permainan V2 -->
+  <div id="victory-modal" class="inspect-modal" style="justify-content:center;align-items:center;">
+    <div class="inspect-card" style="width:520px;text-align:center;">
+      <div style="font-size:56px;margin-bottom:12px;">🏆</div>
+      <h2 style="font-size:24px;font-weight:900;color:#ffffff;margin-bottom:8px;">
+        Tahniah! Selesai Kesemua 10 Tahap!
+      </h2>
+      <p style="font-size:14px;color:var(--text-muted);margin-bottom:20px;line-height:1.5;">
+        Anda telah berjaya membuktikan penguasaan penuh dalam menyusun buku mengikut standard Library of Congress Classification (LCC) di Perpustakaan Tun Abdul Razak, UiTM!
+      </p>
+
+      <div style="background:rgba(34,197,94,0.15);border:1.5px dashed #22c55e;padding:14px;border-radius:12px;color:#86efac;font-size:14px;font-weight:700;margin-bottom:24px;">
+        📢 Sila maklumkan kepada petugas perpustakaan sekarang!
+      </div>
+
+      <button id="btn-close-victory" class="btn-game btn-check" style="margin:0 auto;">
+        Tutup &amp; Uji Semula
+      </button>
+    </div>
+  </div>
+
+  <!-- Kanvas Konfeti Keraian -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Skrip Sumber Data & Logik Permainan -->
+  <script src="../js/data.js"></script>
+  <script src="../js/confetti.js"></script>
+  <script type="module" src="js/v2-game.js"></script>
+</body>
+</html>

@@ -1075,3 +1075,7 @@ const LCC_LEVELS = [
     ]
   }
 ];
+
+if (typeof window !== 'undefined') {
+  window.LCC_LEVELS = LCC_LEVELS;
+}
