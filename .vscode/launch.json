@@ -1,0 +1,27 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Run & Debug in Chrome",
+      "type": "chrome",
+      "request": "launch",
+      "file": "${workspaceFolder}/index.html",
+      "sourceMaps": true
+    },
+    {
+      "name": "Run & Debug in Edge",
+      "type": "msedge",
+      "request": "launch",
+      "file": "${workspaceFolder}/index.html",
+      "sourceMaps": true
+    },
+    {
+      "name": "Run & Debug with Local Server (localhost:8080)",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:8080/index.html",
+      "webRoot": "${workspaceFolder}",
+      "preLaunchTask": "Start Local HTTP Server"
+    }
+  ]
+}
