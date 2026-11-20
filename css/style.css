@@ -48,6 +48,26 @@ body {
   border: 1px solid var(--border-color);
 }
 
+.brand-header {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.site-logo {
+  height: 68px;
+  width: auto;
+  max-width: 100%;
+  display: block;
+  filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.04));
+  transition: transform 0.2s ease;
+}
+
+.site-logo:hover {
+  transform: scale(1.02);
+}
+
 .header-container h1 {
   font-size: 26px;
   font-weight: 800;
