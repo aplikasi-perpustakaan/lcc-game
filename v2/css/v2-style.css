@@ -229,57 +229,6 @@ html, body {
   color: var(--gold);
 }
 
-/* Ambient Audio Mixer Drawer */
-.audio-drawer {
-  position: absolute;
-  top: 72px;
-  right: 24px;
-  background: rgba(15, 23, 42, 0.92);
-  backdrop-filter: var(--panel-blur);
-  border: 1px solid var(--panel-border);
-  border-radius: 14px;
-  padding: 16px;
-  width: 260px;
-  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.5);
-  display: none;
-  flex-direction: column;
-  gap: 12px;
-  z-index: 100;
-}
-
-.audio-drawer.show {
-  display: flex;
-  animation: fadeIn 0.25s ease;
-}
-
-.audio-drawer-title {
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--gold);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.audio-track-row {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.audio-track-label {
-  font-size: 11px;
-  color: var(--text-muted);
-  display: flex;
-  justify-content: space-between;
-}
-
-.audio-slider {
-  width: 100%;
-  accent-color: var(--gold);
-  cursor: pointer;
-}
-
 /* Center Prompt & Hint Bar */
 .center-guidance {
   align-self: center;

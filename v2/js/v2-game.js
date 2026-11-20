@@ -59,24 +59,7 @@ class V2GameApp {
       btnMute.querySelector('span').textContent = isMuted ? 'Muted' : 'Sound: ON';
     });
 
-    // 2. Butang Laci Suasana Ambien (Rain / Focus)
-    const btnAmbi = document.getElementById('btn-ambient-drawer');
-    const drawer = document.getElementById('audio-drawer');
-    btnAmbi?.addEventListener('click', () => {
-      drawer?.classList.toggle('show');
-    });
-
-    // Slider Hujan
-    const chkRain = document.getElementById('chk-rain');
-    const sldRain = document.getElementById('sld-rain');
-    chkRain?.addEventListener('change', (e) => {
-      this.audio.toggleRain(e.target.checked);
-    });
-    sldRain?.addEventListener('input', (e) => {
-      this.audio.setRainVolume(parseFloat(e.target.value));
-    });
-
-    // 3. Kawalan Permainan Bawah (RESET, HINT, CHECK ORDER, INSPECT)
+    // 2. Kawalan Permainan Bawah (RESET, HINT, CHECK ORDER, INSPECT)
     document.getElementById('btn-reset')?.addEventListener('click', () => {
       this.resetCurrentLevel();
     });

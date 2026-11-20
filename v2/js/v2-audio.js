@@ -7,17 +7,12 @@ export class V2AudioEngine {
   constructor() {
     this.ctx = null;
     this.masterGain = null;
-    this.ambientGain = null;
     this.foleyGain = null;
     
     this.isMuted = false;
-    this.rainNode = null;
-    this.clockInterval = null;
     
     this.volumes = {
       master: 0.8,
-      rain: 0.35,
-      clock: 0.15,
       foley: 0.9
     };
   }
@@ -40,14 +35,10 @@ export class V2AudioEngine {
     this.masterGain.gain.setValueAtTime(this.volumes.master, this.ctx.currentTime);
     this.masterGain.connect(this.ctx.destination);
 
-    // Sub-buses
+    // Foley sub-bus
     this.foleyGain = this.ctx.createGain();
     this.foleyGain.gain.setValueAtTime(this.volumes.foley, this.ctx.currentTime);
     this.foleyGain.connect(this.masterGain);
-
-    this.ambientGain = this.ctx.createGain();
-    this.ambientGain.gain.setValueAtTime(1.0, this.ctx.currentTime);
-    this.ambientGain.connect(this.masterGain);
   }
 
   toggleMute() {
@@ -209,54 +200,6 @@ export class V2AudioEngine {
         osc.stop(startT + 0.08);
       });
     } catch (e) {}
-  }
-
-  // Suasana Hujan Tropika di Luar Tingkap Perpustakaan (Sintesis Prosedural)
-  toggleRain(enable) {
-    this.init();
-    if (!this.ctx) return;
-
-    if (enable && !this.rainNode) {
-      const bufferSize = 2 * this.ctx.sampleRate;
-      const noiseBuffer = this.ctx.createBuffer(1, bufferSize, this.ctx.sampleRate);
-      const output = noiseBuffer.getChannelData(0);
-      let lastOut = 0.0;
-      for (let i = 0; i < bufferSize; i++) {
-        const white = Math.random() * 2 - 1;
-        output[i] = (lastOut + 0.02 * white) / 1.02; // Brown noise
-        lastOut = output[i];
-      }
-
-      this.rainNode = this.ctx.createBufferSource();
-      this.rainNode.buffer = noiseBuffer;
-      this.rainNode.loop = true;
-
-      const filter = this.ctx.createBiquadFilter();
-      filter.type = 'lowpass';
-      filter.frequency.value = 1000;
-
-      this.rainGain = this.ctx.createGain();
-      this.rainGain.gain.setValueAtTime(this.volumes.rain, this.ctx.currentTime);
-
-      this.rainNode.connect(filter);
-      filter.connect(this.rainGain);
-      this.rainGain.connect(this.ambientGain);
-
-      this.rainNode.start();
-    } else if (!enable && this.rainNode) {
-      try {
-        this.rainNode.stop();
-        this.rainNode.disconnect();
-      } catch (e) {}
-      this.rainNode = null;
-    }
-  }
-
-  setRainVolume(val) {
-    this.volumes.rain = val;
-    if (this.rainGain && this.ctx) {
-      this.rainGain.gain.setTargetAtTime(val, this.ctx.currentTime, 0.05);
-    }
   }
 
   createPanner(panX) {
