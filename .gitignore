@@ -11,3 +11,4 @@ __pycache__/
 
 # Temporary & Log files
 *.log
+*.code-workspace
