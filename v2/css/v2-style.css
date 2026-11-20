@@ -49,12 +49,17 @@ html, body {
   width: 100vw;
   height: 100vh;
   z-index: 1;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
 }
 
 #canvas-container canvas {
   width: 100%;
   height: 100%;
   display: block;
+  touch-action: none;
 }
 
 /* Vignette & Ambient Dust Overlay */
@@ -572,37 +577,250 @@ html, body {
   to { opacity: 1; transform: translateX(0); }
 }
 
-/* Mobile Responsiveness */
-@media (max-width: 768px) {
+/* Mobile Responsiveness (Portrait & Landscape on Phones/Tablets) */
+
+/* 1. Mod Telefon Melintang (Landscape Phones: e.g. 844x390, 740x360) */
+@media (max-height: 520px) {
   .hud-layer {
-    padding: 12px;
+    padding: 6px 14px;
+  }
+  .top-bar {
+    flex-wrap: nowrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .brand-badge {
+    padding: 4px 10px;
+    border-radius: 8px;
+    gap: 8px;
+  }
+  .brand-badge img {
+    height: 22px;
+  }
+  .brand-text h1 {
+    font-size: 11px;
   }
   .brand-text p {
     display: none;
   }
+  .progress-panel {
+    padding: 4px 8px;
+    gap: 4px;
+    border-radius: 8px;
+  }
+  .progress-panel span {
+    font-size: 10px;
+    margin-right: 2px;
+  }
   .stage-pills {
-    max-width: 180px;
-    overflow-x: auto;
+    gap: 3px;
   }
   .stage-pill {
-    min-width: 26px;
-    height: 26px;
-    font-size: 11px;
+    min-width: 22px;
+    height: 22px;
+    font-size: 10px;
+    border-radius: 6px;
   }
-  .instruction-text {
-    font-size: 15px;
+  .top-actions {
+    gap: 4px;
+  }
+  .hud-btn {
+    padding: 4px 8px;
+    font-size: 10px;
+    border-radius: 6px;
+    gap: 4px;
+  }
+  .hud-btn svg {
+    width: 12px;
+    height: 12px;
+  }
+  .center-guidance {
+    margin-top: 2px;
+    margin-bottom: auto;
+  }
+  /* Sembunyikan perenggan panjang di skrin melintang supaya langsung tidak menutup buku */
+  .center-guidance .instruction-text,
+  .center-guidance p {
+    display: none;
+  }
+  .level-title-tag {
+    padding: 2px 8px;
+    font-size: 10px;
+    margin-bottom: 0;
+  }
+  .hint-pill {
+    padding: 4px 10px;
+    font-size: 11px;
+    margin-top: 4px;
+  }
+  .feedback-banner {
+    padding: 5px 12px;
+    font-size: 11px;
+    margin-top: 4px;
+  }
+  .bottom-bar {
+    gap: 8px;
+    flex-wrap: nowrap;
+    align-items: center;
+  }
+  .controls-left, .controls-right {
+    gap: 6px;
   }
   .btn-game {
-    padding: 10px 16px;
+    padding: 6px 12px;
+    font-size: 11px;
+    border-radius: 8px;
+    gap: 4px;
+  }
+  .btn-game svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+/* 2. Mod Telefon Menegak (Portrait Phones: e.g. 390x844, 412x915) */
+@media (max-width: 640px) {
+  .hud-layer {
+    padding: 10px 12px 14px 12px;
+  }
+  .top-bar {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 8px;
+    align-items: center;
+  }
+  .brand-badge {
+    padding: 6px 10px;
+    border-radius: 10px;
+    gap: 8px;
+  }
+  .brand-badge img {
+    height: 26px;
+  }
+  .brand-text h1 {
     font-size: 12px;
   }
-  .inspect-modal {
-    padding: 16px;
+  .brand-text p {
+    display: none;
+  }
+  .top-actions {
+    gap: 6px;
+  }
+  .hud-btn {
+    padding: 6px 10px;
+    font-size: 11px;
+    border-radius: 8px;
+    gap: 4px;
+  }
+  .progress-panel {
+    grid-column: 1 / -1;
+    width: 100%;
     justify-content: center;
+    padding: 6px 10px;
+    gap: 6px;
+  }
+  .progress-panel span {
+    font-size: 11px;
+  }
+  .stage-pills {
+    width: 100%;
+    justify-content: space-between;
+    max-width: none;
+    overflow-x: visible;
+    gap: 2px;
+  }
+  .stage-pill {
+    min-width: 27px;
+    height: 27px;
+    font-size: 11px;
+    border-radius: 6px;
+    flex: 1;
+  }
+  .center-guidance {
+    margin-top: 6px;
+    margin-bottom: auto;
+    max-width: 100%;
+    padding: 0 4px;
+  }
+  .level-title-tag {
+    padding: 2px 10px;
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+  .instruction-text {
+    font-size: 13px;
+    line-height: 1.3;
+    margin-bottom: 2px;
+  }
+  .center-guidance p {
+    font-size: 11px;
+    line-height: 1.3;
+  }
+  .hint-pill {
+    padding: 6px 12px;
+    font-size: 11px;
+    margin-top: 6px;
+  }
+  .feedback-banner {
+    padding: 6px 14px;
+    font-size: 11px;
+    margin-top: 6px;
+  }
+  .bottom-bar {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr) 1.4fr;
+    gap: 6px;
+    width: 100%;
+  }
+  .controls-left {
+    display: contents;
+  }
+  .controls-right {
+    display: contents;
+  }
+  .btn-game {
+    padding: 10px 4px;
+    font-size: 11px;
+    justify-content: center;
+    border-radius: 10px;
+    min-height: 42px;
+    width: 100%;
+  }
+  .btn-game svg {
+    width: 14px;
+    height: 14px;
+  }
+  .btn-game span {
+    white-space: nowrap;
+  }
+  .inspect-modal {
+    padding: 12px;
     align-items: flex-end;
   }
   .inspect-card {
     width: 100%;
-    max-height: 50vh;
+    max-height: 60vh;
+    padding: 18px;
+  }
+}
+
+/* 3. Tablet & Skrin Sederhana */
+@media (min-width: 641px) and (max-width: 1024px) {
+  .hud-layer {
+    padding: 14px 18px;
+  }
+  .brand-badge {
+    padding: 6px 12px;
+  }
+  .brand-badge img {
+    height: 30px;
+  }
+  .brand-text h1 {
+    font-size: 13px;
+  }
+  .stage-pill {
+    min-width: 28px;
+    height: 28px;
+    font-size: 11px;
   }
 }

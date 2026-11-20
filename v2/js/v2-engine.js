@@ -19,7 +19,10 @@ export class V2ShelfEngine {
 
     this.books = [];          // Senarai objek buku 3D di rak
     this.slots = [];          // Koordinat X slot rak
-    this.selectedBook = null; // Buku yang sedang dipilih / diheret
+    this.selectedBook = null; // Buku yang sedang diheret
+    this.candidateBook = null;// Buku sasaran apabila pointer ditekan
+    this.tapSelectedBook = null; // Buku yang dipilih melalui ketikan (Tap-to-Swap)
+    this.pointerDownPos = null;  // Kedudukan awal pointer
     this.hoveredBook = null;  // Buku di bawah kursor
     this.inspectedBook = null;// Buku dalam mod 3D Inspection
     this.isDragging = false;
@@ -37,17 +40,18 @@ export class V2ShelfEngine {
     this.initBookshelfEnvironment();
     this.initDustMotes();
     this.bindEvents();
+    this.updateCameraFraming();
     this.animate();
   }
 
   initScene() {
     this.scene = new THREE.Scene();
     this.scene.background = new THREE.Color(0x161e2e);
-    this.scene.fog = new THREE.Fog(0x161e2e, 8, 25);
+    this.scene.fog = new THREE.Fog(0x161e2e, 8, 30);
 
     const aspect = this.container.clientWidth / this.container.clientHeight;
     this.camera = new THREE.PerspectiveCamera(40, aspect, 0.1, 50);
-    this.camera.position.set(0, 0.15, 4.4);
+    this.camera.position.set(0, 0.08, 4.4);
 
     this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false, powerPreference: 'high-performance' });
     this.renderer.setSize(this.container.clientWidth, this.container.clientHeight);
@@ -57,7 +61,55 @@ export class V2ShelfEngine {
     this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
     this.renderer.toneMappingExposure = 1.35;
 
+    // Pastikan touch-action: none pada kanvas untuk sentuhan telefon pintar lancar
+    this.renderer.domElement.style.touchAction = 'none';
+
     this.container.appendChild(this.renderer.domElement);
+  }
+
+  // Pelarasan Kamera Responsif mengikut nisbah skrin (Portrait, Landscape, Desktop)
+  updateCameraFraming() {
+    if (!this.renderer || !this.camera || !this.container) return;
+
+    const width = this.container.clientWidth || window.innerWidth;
+    const height = this.container.clientHeight || window.innerHeight;
+    const aspect = width / height;
+
+    this.camera.aspect = aspect;
+
+    const vFovRad = (this.camera.fov * Math.PI) / 180;
+    const tanHalfFov = Math.tan(vFovRad / 2);
+
+    let targetWidth = 4.4;
+    let targetHeight = 2.8;
+    let targetY = 0.08;
+
+    if (aspect < 0.65) {
+      // Skrin telefon menegak tinggi (Portrait e.g. 390x844, 412x915)
+      targetWidth = 3.75;
+      targetHeight = 2.6;
+      targetY = -0.06; // Seimbangkan kedudukan buku di tengah antara bar atas & bawah
+    } else if (aspect < 1.0) {
+      // Skrin tablet menegak (e.g. 3:4 portrait)
+      targetWidth = 4.2;
+      targetHeight = 2.8;
+      targetY = 0.02;
+    } else if (height < 520) {
+      // Skrin telefon melintang (Phone landscape e.g. 844x390, 740x360)
+      targetWidth = 5.0;
+      targetHeight = 3.5; // Mengundurkan kamera sedikit supaya buku muat menegak
+      targetY = -0.05;
+    }
+
+    const zForWidth = targetWidth / (2 * tanHalfFov * aspect);
+    const zForHeight = targetHeight / (2 * tanHalfFov);
+    const requiredZ = Math.max(zForWidth, zForHeight, 4.4);
+
+    this.baseCameraY = targetY;
+    this.camera.position.z = requiredZ;
+    this.camera.position.y = targetY;
+    this.camera.updateProjectionMatrix();
+    this.renderer.setSize(width, height);
   }
 
   initLighting() {
@@ -188,6 +240,8 @@ export class V2ShelfEngine {
     this.books = [];
     this.slots = [];
     this.selectedBook = null;
+    this.candidateBook = null;
+    this.tapSelectedBook = null;
     this.hoveredBook = null;
 
     const count = booksData.length;
@@ -202,6 +256,8 @@ export class V2ShelfEngine {
       this.books.push(bookObj);
       this.scene.add(bookObj.mesh);
     });
+
+    this.updateCameraFraming();
   }
 
   createProceduralBook(data, targetX, slotIndex) {
@@ -368,25 +424,24 @@ export class V2ShelfEngine {
     return texture;
   }
 
-  // Interaksi Heret & Ketik (Spring Physics & Dragging)
+  // Interaksi Heret & Ketik (Spring Physics, Touch Drag & Tap-to-Swap)
   bindEvents() {
     window.addEventListener('resize', () => this.onResize());
+    window.addEventListener('orientationchange', () => {
+      setTimeout(() => this.onResize(), 150);
+    });
 
     const dom = this.renderer.domElement;
 
-    dom.addEventListener('pointerdown', (e) => this.onPointerDown(e));
-    dom.addEventListener('pointermove', (e) => this.onPointerMove(e));
+    dom.addEventListener('pointerdown', (e) => this.onPointerDown(e), { passive: false });
+    dom.addEventListener('pointermove', (e) => this.onPointerMove(e), { passive: false });
     dom.addEventListener('pointerup', (e) => this.onPointerUp(e));
+    dom.addEventListener('pointercancel', (e) => this.onPointerCancel(e));
     dom.addEventListener('dblclick', (e) => this.onDoubleClick(e));
   }
 
   onResize() {
-    if (!this.renderer || !this.camera) return;
-    const width = this.container.clientWidth;
-    const height = this.container.clientHeight;
-    this.camera.aspect = width / height;
-    this.camera.updateProjectionMatrix();
-    this.renderer.setSize(width, height);
+    this.updateCameraFraming();
   }
 
   getPointerCoords(e) {
@@ -402,6 +457,10 @@ export class V2ShelfEngine {
   onPointerDown(e) {
     if (this.inspectedBook) return;
 
+    this.pointerDownPos = { x: e.clientX, y: e.clientY };
+    this.isDragging = false;
+    this.candidateBook = null;
+
     const coords = this.getPointerCoords(e);
     this.mouse.set(coords.x, coords.y);
     this.raycaster.setFromCamera(this.mouse, this.camera);
@@ -414,14 +473,27 @@ export class V2ShelfEngine {
       const hitBook = this.books.find(b => b.mesh === hitMesh);
 
       if (hitBook) {
-        this.selectedBook = hitBook;
-        this.isDragging = true;
+        this.candidateBook = hitBook;
+
+        // Kunci penunjuk ke kanvas supaya seretan jari tidak terlepas di skrin sentuh
+        try {
+          this.renderer.domElement.setPointerCapture(e.pointerId);
+        } catch (err) {}
+
         this.dragPlane.setFromNormalAndCoplanarPoint(
           new THREE.Vector3(0, 0, 1),
           hitMesh.position
         );
 
-        this.audio.playPickup(hitBook.mesh.position.x / 2.5);
+        if (e.pointerType === 'touch') {
+          e.preventDefault();
+        }
+      }
+    } else {
+      // Ketik di kawasan kosong: nyahpilih buku yang sedang dipilih
+      if (this.tapSelectedBook) {
+        this.audio.playDrop(this.tapSelectedBook.mesh.position.x / 2.5, false);
+        this.tapSelectedBook = null;
       }
     }
   }
@@ -431,12 +503,26 @@ export class V2ShelfEngine {
     this.targetMouse.set(coords.x, coords.y);
 
     if (this.inspectedBook) {
-      // Putar buku 360-darjah semasa dalam mod pemeriksaan
-      if (e.buttons === 1) {
-        this.inspectedBook.mesh.rotation.y += e.movementX * 0.01;
-        this.inspectedBook.mesh.rotation.x += e.movementY * 0.01;
+      if (e.buttons === 1 || e.pointerType === 'touch') {
+        this.inspectedBook.mesh.rotation.y += (e.movementX || 0) * 0.01;
+        this.inspectedBook.mesh.rotation.x += (e.movementY || 0) * 0.01;
       }
       return;
+    }
+
+    // Semak sama ada pergerakan melebihi 7px untuk mengaktifkan mod heret (Drag Mode)
+    if (this.candidateBook && !this.isDragging) {
+      const startPos = this.pointerDownPos || { x: e.clientX, y: e.clientY };
+      const dist = Math.hypot(e.clientX - startPos.x, e.clientY - startPos.y);
+
+      if (dist > 7) {
+        this.isDragging = true;
+        this.selectedBook = this.candidateBook;
+        if (this.tapSelectedBook) {
+          this.tapSelectedBook = null;
+        }
+        this.audio.playPickup(this.selectedBook.mesh.position.x / 2.5);
+      }
     }
 
     if (this.isDragging && this.selectedBook) {
@@ -444,18 +530,19 @@ export class V2ShelfEngine {
       this.raycaster.setFromCamera(this.mouse, this.camera);
 
       if (this.raycaster.ray.intersectPlane(this.dragPlane, this.planeIntersect)) {
-        // Hadkan pergerakan di atas rak
-        const clampedX = Math.max(this.slots[0] - 0.3, Math.min(this.slots[this.slots.length - 1] + 0.3, this.planeIntersect.x));
+        const clampedX = Math.max(
+          this.slots[0] - 0.35,
+          Math.min(this.slots[this.slots.length - 1] + 0.35, this.planeIntersect.x)
+        );
         this.selectedBook.mesh.position.x = clampedX;
-        this.selectedBook.mesh.position.z = 0.35; // Angkat ke hadapan sedikit
-        this.selectedBook.mesh.position.y = this.selectedBook.mesh.userData.baseY + 0.15;
-        this.selectedBook.mesh.rotation.x = 0.18; // 12-darjah tilt ke hadapan
+        this.selectedBook.mesh.position.z = 0.38;
+        this.selectedBook.mesh.position.y = this.selectedBook.mesh.userData.baseY + 0.16;
+        this.selectedBook.mesh.rotation.x = 0.18;
 
-        // Semak slot terdekat untuk anjakan buku jiran (Organic slot parting)
         this.updateNeighborParting(clampedX);
       }
-    } else {
-      // Semak kursor melayang (Hover)
+    } else if (e.pointerType !== 'touch') {
+      // Hover check untuk tetikus komputer sahaja
       this.mouse.set(coords.x, coords.y);
       this.raycaster.setFromCamera(this.mouse, this.camera);
       const meshes = this.books.map(b => b.mesh);
@@ -474,12 +561,16 @@ export class V2ShelfEngine {
     }
   }
 
-  onPointerUp() {
+  onPointerUp(e) {
+    try {
+      this.renderer.domElement.releasePointerCapture(e.pointerId);
+    } catch (err) {}
+
+    // 1. Jika pengguna selesai mengheret (Drag & Drop)
     if (this.isDragging && this.selectedBook) {
       this.isDragging = false;
       const currentX = this.selectedBook.mesh.position.x;
 
-      // Cari slot terdekat
       let nearestSlotIdx = 0;
       let minDistance = 9999;
       this.slots.forEach((sx, idx) => {
@@ -492,22 +583,67 @@ export class V2ShelfEngine {
 
       const oldSlotIdx = this.books.indexOf(this.selectedBook);
       if (oldSlotIdx !== -1 && oldSlotIdx !== nearestSlotIdx) {
-        // Tukar kedudukan dua buah buku dalam senarai
-        const targetBook = this.books[nearestSlotIdx];
-        this.books[oldSlotIdx] = targetBook;
-        this.books[nearestSlotIdx] = this.selectedBook;
-
-        this.audio.playDrop(this.slots[nearestSlotIdx] / 2.5, false);
-
-        if (this.onBookSwapped) {
-          this.onBookSwapped();
-        }
+        this.swapBookSlots(oldSlotIdx, nearestSlotIdx);
       } else {
         this.audio.playDrop(currentX / 2.5, false);
       }
 
       this.selectedBook.mesh.rotation.x = 0;
       this.selectedBook = null;
+      this.candidateBook = null;
+      return;
+    }
+
+    // 2. Jika pengguna hanya mengetik (Tap-to-Select & Tap-to-Swap)
+    if (this.candidateBook) {
+      const clickedBook = this.candidateBook;
+      this.candidateBook = null;
+
+      if (!this.tapSelectedBook) {
+        // Ketik kali pertama: Angkat dan pilih buku
+        this.tapSelectedBook = clickedBook;
+        this.audio.playPickup(clickedBook.mesh.position.x / 2.5);
+      } else if (this.tapSelectedBook === clickedBook) {
+        // Ketik buku yang sama sekali lagi: Nyahpilih
+        this.audio.playDrop(clickedBook.mesh.position.x / 2.5, false);
+        this.tapSelectedBook = null;
+      } else {
+        // Ketik buku lain: Tukar kedudukan kedua-dua buah buku serta-merta!
+        const idxA = this.books.indexOf(this.tapSelectedBook);
+        const idxB = this.books.indexOf(clickedBook);
+
+        if (idxA !== -1 && idxB !== -1) {
+          this.swapBookSlots(idxA, idxB);
+        }
+        this.tapSelectedBook = null;
+      }
+    }
+  }
+
+  onPointerCancel(e) {
+    try {
+      this.renderer.domElement.releasePointerCapture(e.pointerId);
+    } catch (err) {}
+
+    if (this.isDragging && this.selectedBook) {
+      this.isDragging = false;
+      this.selectedBook.mesh.rotation.x = 0;
+      this.selectedBook = null;
+    }
+    this.candidateBook = null;
+  }
+
+  swapBookSlots(fromIdx, toIdx) {
+    const bookA = this.books[fromIdx];
+    const bookB = this.books[toIdx];
+
+    this.books[fromIdx] = bookB;
+    this.books[toIdx] = bookA;
+
+    this.audio.playDrop(this.slots[toIdx] / 2.5, false);
+
+    if (this.onBookSwapped) {
+      this.onBookSwapped();
     }
   }
 
@@ -562,9 +698,10 @@ export class V2ShelfEngine {
 
     // 1. Damped Camera Parallax (Gerakan kamera halus mengikut tetikus)
     if (!this.inspectedBook) {
-      this.camera.position.x += (this.targetMouse.x * 0.25 - this.camera.position.x) * 0.05;
-      this.camera.position.y += (0.15 + this.targetMouse.y * 0.15 - this.camera.position.y) * 0.05;
-      this.camera.lookAt(0, 0.05, 0);
+      const baseCamY = this.baseCameraY !== undefined ? this.baseCameraY : 0.08;
+      this.camera.position.x += (this.targetMouse.x * 0.12 - this.camera.position.x) * 0.05;
+      this.camera.position.y += (baseCamY + this.targetMouse.y * 0.08 - this.camera.position.y) * 0.05;
+      this.camera.lookAt(0, baseCamY - 0.04, 0);
     }
 
     // 2. Animasi Zarah Debu Melayang (Dust Motes)
@@ -593,7 +730,15 @@ export class V2ShelfEngine {
         mesh.position.y += (0.1 - mesh.position.y) * 0.1;
         mesh.position.z += (2.2 - mesh.position.z) * 0.1;
       } else if (book === this.selectedBook && this.isDragging) {
-        // Kedudukan dikawal secara langsung oleh tetikus dalam onPointerMove
+        // Kedudukan dikawal secara langsung oleh seretan pointer dalam onPointerMove
+      } else if (book === this.tapSelectedBook) {
+        // Buku yang dipilih melalui ketikan (Tap-to-Swap):
+        // Angkat ke hadapan dan condong sedikit supaya jelas aktif
+        const targetX = this.slots[idx];
+        mesh.position.x += (targetX - mesh.position.x) * 0.14;
+        mesh.position.y += (mesh.userData.baseY + 0.22 - mesh.position.y) * 0.14;
+        mesh.position.z += (0.45 - mesh.position.z) * 0.14;
+        mesh.rotation.x += (0.16 - mesh.rotation.x) * 0.15;
       } else {
         // Kembali ke slot dengan spring damping
         const targetX = this.slots[idx];
