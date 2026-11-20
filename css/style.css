@@ -1,0 +1,789 @@
+/* ==========================================================================
+   LCC Game - CSS Utama (HTML5 Modern Tanpa Flash)
+   ========================================================================== */
+
+:root {
+  --primary-color: #1e3a8a;
+  --primary-hover: #1e40af;
+  --success-color: #15803d;
+  --success-bg: #dcfce7;
+  --danger-color: #b91c1c;
+  --danger-bg: #fee2e2;
+  --wood-top: #8b5a2b;
+  --wood-front: #5c3a1e;
+  --wood-shadow: #3b2311;
+  --shelf-bg: #2d1e12;
+  --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  --card-bg: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #cbd5e1;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg-gradient);
+  color: var(--text-main);
+  min-height: 100vh;
+  padding: 20px 15px 60px 15px;
+  line-height: 1.5;
+}
+
+/* Header & Banner Utama */
+.header-container {
+  max-width: 1200px;
+  margin: 0 auto 25px auto;
+  text-align: center;
+  background: var(--card-bg);
+  padding: 25px 20px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+  border: 1px solid var(--border-color);
+}
+
+.header-container h1 {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 8px;
+  letter-spacing: -0.5px;
+}
+
+.header-container p.subtitle {
+  font-size: 16px;
+  color: var(--text-muted);
+  max-width: 800px;
+  margin: 0 auto 15px auto;
+}
+
+/* Statistik & Kawalan Utama */
+.top-controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 15px;
+  padding-top: 15px;
+  border-top: 1px solid #f1f5f9;
+}
+
+/* Bar Kemajuan Sentiasa Kelihatan (Sticky Progress Bar) */
+.sticky-progress-container {
+  position: sticky;
+  top: 12px;
+  z-index: 999;
+  max-width: 1100px;
+  margin: 0 auto 24px auto;
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(203, 213, 225, 0.85);
+  border-radius: 14px;
+  padding: 10px 18px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.25s ease;
+}
+
+.sticky-progress-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.sticky-progress-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.sticky-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.progress-track {
+  width: 150px;
+  height: 10px;
+  background: #e2e8f0;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #3b82f6 0%, #10b981 100%);
+  border-radius: 6px;
+  transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sticky-stage-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.stage-pill {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 5px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+  background: #f8fafc;
+  font-size: 13px;
+  font-weight: 700;
+  color: #475569;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  transition: all 0.2s ease;
+}
+
+.stage-pill:hover {
+  border-color: #3b82f6;
+  color: #1e3a8a;
+  transform: translateY(-2px);
+}
+
+.stage-pill.solved {
+  background: #22c55e;
+  border-color: #16a34a;
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(34, 197, 94, 0.35);
+}
+
+.view-tabs {
+  display: inline-flex;
+  background: #f1f5f9;
+  padding: 4px;
+  border-radius: 10px;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+  background: #ffffff;
+  color: var(--primary-color);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.stats-badges {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.badge {
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 14px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.badge.success-badge {
+  background: var(--success-bg);
+  color: var(--success-color);
+}
+
+.btn-icon {
+  background: #f1f5f9;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 14px;
+  cursor: pointer;
+  color: var(--text-main);
+  transition: all 0.2s;
+}
+
+.btn-icon:hover {
+  background: #e2e8f0;
+}
+
+/* Mod Peringkat (Stage Mode) Navigasi */
+.stage-selector {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 25px;
+}
+
+.stage-btn {
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  border: 2px solid var(--border-color);
+  background: #ffffff;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--text-main);
+  cursor: pointer;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.stage-btn:hover {
+  border-color: var(--primary-color);
+  transform: translateY(-2px);
+}
+
+.stage-btn.active {
+  background: var(--primary-color);
+  color: #ffffff;
+  border-color: var(--primary-color);
+  box-shadow: 0 4px 10px rgba(30, 58, 138, 0.3);
+}
+
+.stage-btn.completed {
+  border-color: var(--success-color);
+  background: #f0fdf4;
+  color: var(--success-color);
+}
+
+.stage-btn.completed.active {
+  background: var(--success-color);
+  color: #ffffff;
+}
+
+.stage-btn.completed::after {
+  content: "✓";
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--success-color);
+  color: #ffffff;
+  font-size: 10px;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+}
+
+/* Kad Tahap Permainan */
+.level-card {
+  max-width: 1100px;
+  margin: 0 auto 30px auto;
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.07);
+  border: 1px solid var(--border-color);
+  overflow: hidden;
+  transition: transform 0.2s ease;
+}
+
+.level-header {
+  padding: 16px 24px;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.level-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.level-number-tag {
+  background: var(--primary-color);
+  color: #ffffff;
+  font-weight: 800;
+  font-size: 16px;
+  padding: 4px 12px;
+  border-radius: 8px;
+}
+
+.level-card.is-solved .level-number-tag {
+  background: var(--success-color);
+}
+
+.level-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.level-body {
+  padding: 24px 20px;
+}
+
+/* Rak Buku (Bookshelf Visual) */
+.shelf-container {
+  background: radial-gradient(circle at center, #3d2919 0%, #20140b 100%);
+  border-radius: 12px;
+  padding: 30px 15px 0 15px;
+  box-shadow: inset 0 6px 20px rgba(0, 0, 0, 0.5);
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.shelf-slots {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 18px;
+  min-height: 270px;
+  padding-bottom: 8px;
+}
+
+.slot {
+  width: 95px;
+  height: 250px;
+  border: 2px dashed rgba(255, 255, 255, 0.25);
+  border-radius: 8px;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  transition: all 0.2s ease;
+  background: rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+
+.slot::before {
+  content: attr(data-slot-num);
+  position: absolute;
+  top: 10px;
+  color: rgba(255, 255, 255, 0.3);
+  font-size: 28px;
+  font-weight: 800;
+  pointer-events: none;
+}
+
+.slot.drag-over {
+  border-color: #3b82f6 !important;
+  background: rgba(59, 130, 246, 0.28) !important;
+  box-shadow: 0 0 16px rgba(59, 130, 246, 0.6), inset 0 0 10px rgba(59, 130, 246, 0.3) !important;
+  transform: scale(1.04);
+}
+
+.slot.target-selected {
+  border-color: #facc15;
+  background: rgba(250, 204, 21, 0.25);
+  animation: pulseSlot 1.2s infinite;
+}
+
+@keyframes pulseSlot {
+  0% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0.4); }
+  70% { box-shadow: 0 0 0 10px rgba(250, 204, 21, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(250, 204, 21, 0); }
+}
+
+/* Rak Kayu Bawah */
+.shelf-plank {
+  height: 22px;
+  background: linear-gradient(180deg, #a77038 0%, #683f18 100%);
+  border-top: 3px solid #c89052;
+  border-bottom: 3px solid #3d230d;
+  box-shadow: 0 10px 15px rgba(0, 0, 0, 0.6);
+  margin-left: -15px;
+  margin-right: -15px;
+  border-bottom-left-radius: 12px;
+  border-bottom-right-radius: 12px;
+}
+
+/* Reka Bentuk Buku 3D */
+.book {
+  width: 90px;
+  height: 240px;
+  border-radius: 6px;
+  cursor: grab;
+  user-select: none;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 8px 4px 6px 4px;
+  box-shadow: -3px 0 8px rgba(0, 0, 0, 0.35), 3px 3px 10px rgba(0, 0, 0, 0.4);
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.2, 0, 0, 1), box-shadow 0.2s ease;
+  overflow: hidden;
+}
+
+.book:hover {
+  transform: translateY(-8px) scale(1.03);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+  z-index: 10;
+}
+
+.book.dragging {
+  opacity: 0.45;
+  filter: brightness(0.85);
+  border-style: dashed !important;
+  cursor: grabbing;
+}
+
+.drag-clone-preview {
+  opacity: 1 !important;
+  filter: none !important;
+  transform: none !important;
+  pointer-events: none !important;
+}
+
+.book.selected {
+  outline: 4px solid #facc15;
+  transform: translateY(-14px) scale(1.05);
+  box-shadow: 0 16px 30px rgba(250, 204, 21, 0.5);
+  z-index: 20;
+}
+
+/* Jalur Tepi Buku (Spine Ribs & Textures) */
+.book::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 10px;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.3) 0%, rgba(0, 0, 0, 0.3) 100%);
+  pointer-events: none;
+}
+
+.book-rib {
+  height: 3px;
+  background: rgba(255, 255, 255, 0.35);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+  margin: 4px 4px;
+  border-radius: 2px;
+}
+
+.book-rib.bottom {
+  margin-top: 4px;
+  margin-bottom: 2px;
+}
+
+/* Label Nombor Panggilan (Library Spine Callout) */
+.call-number-label {
+  background: #ffffff;
+  color: #111827;
+  padding: 8px 6px;
+  border-radius: 4px;
+  font-family: "Courier New", Courier, monospace;
+  font-weight: 800;
+  font-size: 13px;
+  line-height: 1.3;
+  text-align: left;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+  border: 1px solid #d1d5db;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: auto;
+  margin-bottom: 2px;
+  margin-left: 2px;
+  margin-right: 2px;
+  letter-spacing: 0.3px;
+}
+
+.call-line {
+  display: block;
+  white-space: nowrap;
+  text-align: left;
+  width: 100%;
+}
+
+/* Panel Kawalan Bawah Kad */
+.level-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+.btn-group {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  padding: 10px 20px;
+  font-size: 15px;
+  font-weight: 700;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn svg {
+  display: block;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.btn-primary {
+  background: var(--primary-color);
+  color: #ffffff;
+}
+
+.btn-primary:hover {
+  background: var(--primary-hover);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+}
+
+.btn-outline:hover {
+  background: #f1f5f9;
+}
+
+.btn-danger {
+  background: #dc2626;
+  color: #ffffff;
+  border: 1px solid #b91c1c;
+}
+
+.btn-danger:hover {
+  background: #b91c1c;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.3);
+}
+
+/* Mesej Maklum Balas */
+.feedback-box {
+  margin-top: 16px;
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  display: none;
+  align-items: center;
+  justify-content: space-between;
+  animation: fadeIn 0.3s ease;
+}
+
+.feedback-box.show {
+  display: flex;
+}
+
+.feedback-box.correct {
+  background: var(--success-bg);
+  color: var(--success-color);
+  border: 1px solid #86efac;
+}
+
+.feedback-box.wrong {
+  background: var(--danger-bg);
+  color: var(--danger-color);
+  border: 1px solid #fca5a5;
+}
+
+.hint-box {
+  margin-top: 14px;
+  padding: 14px 18px;
+  background: #eff6ff;
+  border-left: 4px solid #3b82f6;
+  border-radius: 0 8px 8px 0;
+  color: #1e40af;
+  font-size: 14px;
+  display: none;
+}
+
+.hint-box.show {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+.explanation-box {
+  margin-top: 12px;
+  padding: 14px 18px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  color: #334155;
+  font-size: 14px;
+  display: none;
+}
+
+.explanation-box.show {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+/* Modal Tahniah Keseluruhan */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.7);
+  backdrop-filter: blur(4px);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-overlay.show {
+  display: flex;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: #ffffff;
+  border-radius: 20px;
+  max-width: 520px;
+  width: 100%;
+  padding: 35px 30px;
+  text-align: center;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.25);
+  animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.modal-icon {
+  font-size: 60px;
+  margin-bottom: 15px;
+}
+
+.modal-title {
+  font-size: 26px;
+  font-weight: 800;
+  color: #0f172a;
+  margin-bottom: 10px;
+}
+
+.modal-desc {
+  font-size: 16px;
+  color: #475569;
+  margin-bottom: 25px;
+  line-height: 1.6;
+}
+
+.modal-instruction {
+  background: #f0fdf4;
+  border: 2px dashed #22c55e;
+  padding: 16px;
+  border-radius: 12px;
+  color: #15803d;
+  font-weight: 700;
+  font-size: 16px;
+  margin-bottom: 25px;
+}
+
+/* Kanvas Konfeti Keraian */
+#confetti-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 99999;
+  display: none;
+}
+
+/* Animasi */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes popIn {
+  from { opacity: 0; transform: scale(0.85); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+/* Footer */
+.footer-text {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-top: 30px;
+}
+
+/* Responsive Breakpoints */
+@media (max-width: 768px) {
+  .header-container h1 {
+    font-size: 20px;
+  }
+  .sticky-progress-container {
+    top: 6px;
+    padding: 8px 12px;
+  }
+  .progress-track {
+    width: 80px;
+  }
+  .stage-pill {
+    width: 26px;
+    height: 26px;
+    font-size: 11px;
+    border-radius: 6px;
+  }
+  .shelf-slots {
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+  }
+  .slot {
+    width: 66px;
+    height: 200px;
+  }
+  .book {
+    width: 62px;
+    height: 190px;
+    padding: 6px 2px 4px 2px;
+  }
+  .call-number-label {
+    font-size: 10px;
+    line-height: 1.2;
+    padding: 4px 2px;
+    margin-bottom: 2px;
+  }
+  .top-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

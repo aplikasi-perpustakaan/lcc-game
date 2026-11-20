@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Permainan Susunan Buku Library of Congress (LCC)</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Header Utama -->
+  <header class="header-container">
+    <h1>Berdasarkan klasifikasi Library of Congress, susun kesemua 5 buku mengikut susunan yang betul.</h1>
+    <p class="subtitle">
+      Heret dan lepaskan (<em>drag &amp; drop</em>) buku ke slot yang betul, atau klik/ketik mana-mana buku kemudian klik buku sasaran untuk menukar kedudukan.
+    </p>
+
+    <div class="top-controls">
+      <!-- Statistik & Kawalan Bunyi -->
+      <div class="stats-badges">
+        <span id="stat-solved-count" class="badge">0 / 10 Selesai</span>
+        <button id="btn-mute" class="btn-icon">🔊 Bunyi: Hidup</button>
+        <button id="btn-reset-all" class="btn-icon">↺ Reset Semua</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Bar Kemajuan Sentiasa Kelihatan (Sticky Progress Bar) -->
+  <div id="sticky-progress-bar" class="sticky-progress-container">
+    <div class="sticky-progress-content">
+      <div class="sticky-progress-left">
+        <span class="sticky-title">Kemajuan:</span>
+        <span id="sticky-solved-badge" class="badge">0 / 10 Selesai</span>
+        <div class="progress-track" title="Peratusan siap">
+          <div id="progress-fill" class="progress-fill"></div>
+        </div>
+      </div>
+      <div id="sticky-stage-pills" class="sticky-stage-pills" title="Klik nombor untuk lompat ke tahap berkenaan"></div>
+    </div>
+  </div>
+
+  <!-- Bekas Utama Tahap Permainan -->
+  <main id="game-levels-container"></main>
+
+  <!-- Peringatan Petugas di Bahagian Bawah -->
+  <div class="header-container" style="margin-top: 35px; border-left: 6px solid var(--primary-color);">
+    <h2 style="font-size: 20px; font-weight: 800; color: var(--primary-color); margin-bottom: 6px;">
+      Maklumkan petugas selepas memastikan kesemuanya "CORRECT!".
+    </h2>
+    <p style="color: var(--text-muted); font-size: 14px;">
+      Pastikan setiap tahap telah disemak menggunakan butang <strong>CHECK ORDER</strong> sehingga status bertukar menjadi hijau.
+    </p>
+  </div>
+
+  <footer class="footer-text">
+    <p>Aplikasi Perpustakaan &bull; Modul Pembelajaran LCC HTML5 &bull; 100% Bebas Adobe Flash</p>
+  </footer>
+
+  <!-- Modal Tahniah Keseluruhan -->
+  <div id="victory-modal" class="modal-overlay">
+    <div class="modal-content">
+      <div class="modal-icon">🏆</div>
+      <h2 class="modal-title">Tahniah! Selesai Semua!</h2>
+      <p class="modal-desc">
+        Hebat! Anda telah berjaya menyusun kesemua 10 tahap buku mengikut Sistem Pengkelasan Library of Congress (LCC) dengan tepat.
+      </p>
+      <div class="modal-instruction">
+        📢 Sila maklumkan kepada petugas perpustakaan sekarang!
+      </div>
+      <button id="btn-close-modal" class="btn btn-primary" style="margin: 0 auto;">
+        Tutup &amp; Semak Semula
+      </button>
+    </div>
+  </div>
+
+  <!-- Kanvas Konfeti Keraian -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Skrip JavaScript -->
+  <script src="js/data.js"></script>
+  <script src="js/audio.js"></script>
+  <script src="js/confetti.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
